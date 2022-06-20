@@ -71,6 +71,10 @@
                 }
             });
 
+            const alert = "<div class=\"alert alert-danger\" role=\"alert\">\n" +
+                "  Something went wrong. The server might be down, or your words aren't real.\n" +
+                "</div>";
+
             $('#search').on('click', function() {
                 $.ajax({
                     headers: {
@@ -92,10 +96,7 @@
                     },
                     'success': function (response) {
                         if (!response.path) {
-                            let error = "<div class=\"alert alert-danger\" role=\"alert\">\n" +
-                            "  This is a danger alert—check it out!\n" +
-                            "</div>";
-                            $(document).append(error);
+                            $(document).append(alert);
                             return;
                         }
                         for (let i = 0; i < response.path.length; i++) {
@@ -103,9 +104,6 @@
                         }
                     },
                     'error': function() {
-                        const alert = "<div class=\"alert alert-danger\" role=\"alert\">\n" +
-                            "  This is a danger alert—check it out!\n" +
-                            "</div>";
                         $('#alerts').append(alert);
                     }
                 });
