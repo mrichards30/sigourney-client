@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="js/jquery-3.6.0.js"></script>
+    <script src="js/bootstrap.bundle.js"></script>
+
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/sigourney.css">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<main role="main" class="container">
+    <h1 class="mt-5">Sigourney</h1>
+    <p class="lead">A <a href="https://wordwormdormdork.com/">Weaver</a> solver.</p>
+
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="initial">From</span>
+        </div>
+        <input id="initialText" type="text" class="form-control" placeholder="PAST" aria-label="From" aria-describedby="initial">
+    </div>
+
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="target">To</span>
+        </div>
+        <input id="targetText" type="text" class="form-control" placeholder="TIME" aria-label="To" aria-describedby="target">
+    </div>
+
+    <div class="text-center">
+        <button id="search" type="button" class="btn btn-outline-secondary">Search</button>
+        <br><br>
+        <div id="loading">
+            <div class="spinner-border"></div><br>
+            <p>Calling Sigourney Weaver for help</p>
+        </div>
+    </div>
+
+    <div id="answer">
+        <ol id="answerList">
+
+        </ol>
+    </div>
+
+    <div id="alerts" class="container"></div>
+
+    <script>
+        $(document).ready(function () {
+            $('#search').hide();
+            $('#loading').hide();
+            $('#answerList').empty();
+            $('#initialText').on('input', function() {
+                $('#answerList').empty();
+                if ($('#targetText').val() && $('#initialText').val()
+                    && $('#targetText').val().length === 4 && $('#initialText').val().length === 4) {
+                    $('#search').fadeIn();
+                } else {
+                    $('#search').hide();
+                }
+            });
+
+            $('#targetText').on('input', function() {
+                $('#answerList').empty();
+                if ($('#targetText').val() && $('#initialText').val()
+                    && $('#targetText').val().length === 4 && $('#initialText').val().length === 4) {
+                    $('#search').fadeIn();
+                } else {
+                    $('#search').hide();
+                }
+            });
+
+            $('#search').on('click', function() {
+                $.ajax({
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    'type': 'POST',
+                    'url': "https://sigourney-weaver.herokuapp.com/deep",
+                    'data': JSON.stringify({
+                        "initial": $('#initialText').val(),
+                        "target": $('#targetText').val()
+                    }),
+                    'dataType': 'json',
+                    'beforeSend': function() {
+                        $('#loading').show();
+                    },
+                    'complete': function() {
+                        $('#loading').hide();
+                    },
+                    'success': function (response) {
+                        if (!response.path) {
+                            let error = "<div class=\"alert alert-danger\" role=\"alert\">\n" +
+                            "  This is a danger alert—check it out!\n" +
+                            "</div>";
+                            $(document).append(error);
+                            return;
+                        }
+                        for (let i = 0; i < response.path.length; i++) {
+                            $('#answerList').append("<li>" + response.path[i] + "</li>");
+                        }
+                    },
+                    'error': function() {
+                        const alert = "<div class=\"alert alert-danger\" role=\"alert\">\n" +
+                            "  This is a danger alert—check it out!\n" +
+                            "</div>";
+                        $('#alerts').append(alert);
+                    }
+                });
+            });
+        });
+    </script>
+
+</main>
+</body></html>
